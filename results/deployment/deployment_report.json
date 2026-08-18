@@ -1,0 +1,97 @@
+{
+  "hardware": "NVIDIA GeForce GTX 950M (laptop)",
+  "target": "Jetson Orin Nano 15W",
+  "latency_stats": {
+    "detection_ms": {
+      "mean": 363.9584970474243,
+      "std": 599.0996610596608,
+      "p50": 275.21395683288574,
+      "p95": 317.52312183380116,
+      "p99": 2499.313595294944
+    },
+    "pose_ms": {
+      "mean": 9.002814292907715,
+      "std": 10.690177716834684,
+      "p50": 9.430408477783203,
+      "p95": 15.736603736877441,
+      "p99": 39.68174934387198
+    },
+    "sop_ms": {
+      "mean": 0.3124380111694336,
+      "std": 2.187066078186035,
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 7.9671692848205256
+    },
+    "total_ms": {
+      "mean": 373.27374935150146,
+      "std": 606.7132933553504,
+      "p50": 284.41309928894043,
+      "p95": 322.3900437355041,
+      "p99": 2538.847444057456
+    }
+  },
+  "throughput_fps": 2.6789989966809262,
+  "meets_target_fps": false,
+  "onnx_results": {
+    "status": "success",
+    "onnx_latency_ms": {
+      "mean": 250.1063346862793,
+      "p50": 250.1063346862793,
+      "p95": 250.1063346862793
+    },
+    "pytorch_latency_ms": {
+      "mean": 341.0677909851074,
+      "p50": 341.0677909851074,
+      "p95": 341.0677909851074
+    },
+    "speedup": 1.3636911332650792,
+    "onnx_path": "C:\\Users\\ASUS\\Desktop\\pallet-pose (2)\\pallet-pose\\models\\best.onnx"
+  },
+  "failure_analysis": {
+    "failure_modes": [
+      {
+        "mode": "No pallet detected",
+        "cause": "Pallet occluded, out of frame, or below confidence threshold",
+        "system_output": "Empty assessment list \u2014 no pallets found",
+        "consumer_signal": "Zero pallets in output JSON"
+      },
+      {
+        "mode": "Pallet detected but no keypoints",
+        "cause": "Corners not visible (heavy occlusion, lighting, angle)",
+        "system_output": "pose: null, reason: 'No keypoints detected'",
+        "consumer_signal": "pose field is null with reason string"
+      },
+      {
+        "mode": "PnP fails to converge",
+        "cause": "Degenerate corner geometry (collinear, too few points)",
+        "system_output": "pose: null, reason: 'PnP did not converge'",
+        "consumer_signal": "pose field is null with reason string"
+      },
+      {
+        "mode": "High reprojection error",
+        "cause": "Poor corner localisation or wrong pallet dimensions",
+        "system_output": "pose with high uncertainty values",
+        "consumer_signal": "uncertainty values exceed tolerance"
+      }
+    ],
+    "temporal_consistency": {
+      "strategy": "Multi-frame averaging \u2014 pallet stays in same slot across many frames",
+      "implementation": [
+        "Track pallet across N consecutive frames using IoU matching",
+        "Collect pose estimates from each frame",
+        "Reject outliers (beyond 2-sigma from median)",
+        "Average remaining poses for final estimate",
+        "Increase confidence with more frames (up to a cap)"
+      ],
+      "expected_benefit": "Reduces random pose error by ~sqrt(N) for N frames",
+      "caveat": "Only valid if pallet is stationary; must detect movement to reset"
+    },
+    "jetson_expectation": {
+      "target": "Jetson Orin Nano 15W",
+      "reasoning": "Jetson Orin Nano has a 40 TOPS NPU (INT8). YOLOv8s on Orin Nano typically achieves 30-60 FPS with TensorRT INT8, well above the 15 FPS target. PnP and SOP checks are CPU-bound and negligible. Main change: model export to TensorRT engine with INT8 calibration. Expected accuracy drop: <2% mAP for INT8 vs FP32 on YOLOv8s.",
+      "measured_on": "NVIDIA GeForce GTX 950M (laptop)",
+      "note": "These are reasoned expectations, NOT measured numbers. Actual deployment requires Jetson hardware to verify."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+# ── Large files (use Git LFS or download links) ──
+*.pt
+*.onnx
+*.weights
+*.pth
+# ── Data (not in git — too large) ──
+data/raw/
+data/processed/
+data/splits/
+data/test_images/
+# ── Calibration images (not needed in repo) ──
+calibration/images/
+# ── Calibration outputs (binary .npy — include if small) ──
+# Uncomment to exclude:
+# calibration/*.npy
+# ── Results ──
+# Keep result plots (PNG) but exclude large JSON dumps
+results/detection/detection_results.json
+results/pipeline/assessment_*.json
+results/pose/pose_eval_raw.json
+# ── OS files ──
+.DS_Store
+Thumbs.db
+desktop.ini
+# ── Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+# ── Test images ──
+test_pallet.jpg
+test_calibration.py

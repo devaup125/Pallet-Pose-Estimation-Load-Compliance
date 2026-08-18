@@ -1,0 +1,99 @@
+
+paths:
+  data_raw: "data/raw"               
+  data_processed: "data/processed"   
+  models_dir: "models"                
+  calibration_dir: "calibration"    
+  results_dir: "results"              
+  
+  project_root: "."
+
+
+dataset:
+  # Roboflow API keys — get yours from the dataset download pages:
+  # https://app.roboflow.com/rj-xvfw4/plh-c-1-veibf/1
+  # https://app.roboflow.com/rj-xvfw4/pallet-ff5lh-fp7tw/1
+ 
+  roboflow_api_key: "YOUR_ROBOFLOW_API_KEY"  # Replace this
+  dataset_1: "plh-c-1-veibf"
+  dataset_2: "pallet-ff5lh-fp7tw"
+  
+  
+  classes: ["pallet"]
+  
+  # Split ratios
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  
+  split_by: "random"  
+
+# Training 
+training:
+  model_name: "yolov8s"
+  epochs: 150
+  batch_size: 16       
+  imgsz: 640            
+  device: 0           
+  patience: 30       
+  
+  use_pose: true
+  num_keypoints: 4     
+
+# Pallet dimensions 
+pallet:
+  
+  width_m: 1.2          
+  depth_m: 0.8          
+  height_m: 0.145       
+ 
+  corners_3d:
+    - [-0.6, -0.4, 0.0]   # top-left
+    - [ 0.6, -0.4, 0.0]   # top-right
+    - [ 0.6,  0.4, 0.0]   # bottom-right
+    - [-0.6,  0.4, 0.0]   # bottom-left
+
+#Camera
+camera:
+  
+  height_m: 1.2          # Height above floor
+  tilt_deg: 20.0         # Tilt downward
+  
+ 
+  camera_matrix: null     
+  distortion: null      
+  
+  checkerboard_cols: 7
+  checkerboard_rows: 4
+  square_size_mm: 35.0
+
+
+# --- Pose estimation ---
+pose:
+  # PnP method
+  pnp_method: "SOLVEPNP_IPPE"
+  
+  # Confidence threshold for accepting a pose
+  min_confidence: 0.5
+  
+  # Slot tolerance
+  position_tolerance_cm: 2.0    # ±2cm
+  orientation_tolerance_deg: 3.0 # ±3°
+
+#SOP / Load compliance
+sop:
+  # SOP-PAL-03 thresholds
+  max_overhang_cm: 3.0
+  max_load_height_m: 1.8
+  max_box_rotation_deg: 15.0
+  max_centroid_offset_cm: 10.0
+  
+  # Verdict thresholds
+  pass_confidence: 0.7
+  manual_inspection_confidence: 0.4  # Below this → manual inspection
+
+# Deployment
+deployment:
+  target_fps: 15
+  target_hardware: "Jetson Orin Nano 15W"
+  measured_hardware: "NVIDIA GeForce GTX 950M (laptop)"
